@@ -33,6 +33,8 @@ INSERT INTO caballeros VALUES
 SELECT * FROM caballeros;
 SELECT * FROM caballeros WHERE signo = 'Leo'; -- Consulta más rápida gracias a los indices
 
+SELECT * FROM caballeros_index;
+
 -- busqueda con indices
 CREATE TABLE caballeros_index (
 	caballero_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -61,3 +63,28 @@ SHOW INDEX FROM caballeros_index;
 
 SELECT * FROM caballeros_index WHERE MATCH (armadura, rango, signo, ejercito, pais) -- va a buscar coincidencias en todas esas columnas
 AGAINST('Oro' IN BOOLEAN MODE);
+
+-- Modificación de índices
+DROP TABLE caballeros_index;
+
+SHOW INDEX FROM caballeros;
+
+-- Se crea la tabla sin autoincremental ni llaves primarias
+CREATE TABLE caballeros_index (
+	caballero_id INT UNSIGNED,
+	nombre VARCHAR(30),
+	armadura VARCHAR(30),
+	rango VARCHAR(30),
+	signo VARCHAR(30),
+	ejercito VARCHAR(30),
+	pais VARCHAR(30)
+);
+
+SELECT * FROM caballeros_index;
+
+-- Se configuran las llaves primarias, el autoincremental y los índices
+ALTER TABLE caballeros_index ADD CONSTRAINT pk_caballero_id PRIMARY KEY(caballero_id);
+ALTER TABLE caballeros_index MODIFY COLUMN caballero_id INT AUTO_INCREMENT;
+ALTER TABLE caballeros_index ADD CONSTRAINT	uq_armadura UNIQUE(armadura);
+ALTER TABLE caballeros_index ADD INDEX i_rango(rango);
+ALTER TABLE caballeros_index ADD FULLTEXT INDEX fi_search (nombre, signo);
