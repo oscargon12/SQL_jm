@@ -93,4 +93,23 @@ SELECT c.caballero_id, c.nombre, a.armadura, r.rango, s.signo, e.ejercito, p.pai
     INNER JOIN paises AS p		ON c.pais = p.pais_id;
     
     
--- Solución profe
+-- Subconsultas
+SELECT signo,
+(SELECT COUNT(*) FROM caballeros c WHERE c.signo = s.signo_id)
+AS Total_caballeros
+FROM signos s;
+
+
+-- Vistas
+-- Son tablas virtuales que se arman con otras listas existentes
+CREATE VIEW vista_caballeros AS 
+	SELECT c.caballero_id, c.nombre, a.armadura, r.rango, s.signo, e.ejercito, p.pais
+		FROM caballeros AS c
+		INNER JOIN armaduras AS a	ON c.armadura = a.armadura_id
+		INNER JOIN rangos AS r		ON c.rango = r.rango_id
+		INNER JOIN signos AS s		ON c.signo = s.signo_id
+		INNER JOIN ejercitos AS e	ON c.ejercito = e.ejercito_id
+		INNER JOIN paises AS p		ON c.pais = p.pais_id;
+        
+SELECT * FROM vista_caballeros;
+

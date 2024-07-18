@@ -84,7 +84,16 @@ SELECT * FROM caballeros_index;
 
 -- Se configuran las llaves primarias, el autoincremental y los índices
 ALTER TABLE caballeros_index ADD CONSTRAINT pk_caballero_id PRIMARY KEY(caballero_id);
+-- Añade una restricción de clave primaria a la columna caballero_id. Efecto: caballero_id debe tener valores únicos y no nulos en la tabla caballeros_index.
+
 ALTER TABLE caballeros_index MODIFY COLUMN caballero_id INT AUTO_INCREMENT;
+-- Modifica la columna caballero_id para que sea un campo de tipo entero con auto-incremento.
+
 ALTER TABLE caballeros_index ADD CONSTRAINT	uq_armadura UNIQUE(armadura);
+-- Añade una restricción de unicidad a la columna armadura. Efecto: Los valores en la columna armadura deben ser únicos en la tabla.
+
 ALTER TABLE caballeros_index ADD INDEX i_rango(rango);
+-- Añade un índice a la columna rango. Efecto: Mejora la velocidad de las consultas que filtran o ordenan por la columna rango.
+
 ALTER TABLE caballeros_index ADD FULLTEXT INDEX fi_search (nombre, signo);
+-- Añade un índice de texto completo a las columnas nombre y signo. Efecto: Mejora la velocidad y eficiencia de las búsquedas de texto completo en las columnas nombre y signo.
