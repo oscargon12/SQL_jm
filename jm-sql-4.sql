@@ -113,3 +113,59 @@ CREATE VIEW vista_caballeros AS
         
 SELECT * FROM vista_caballeros;
 
+-- Restricciones Cascade
+/*
+4 tipos de restricciones para DELETE y UPDATE
+	- CASCADE
+	- SET NULL
+    - SET DEFAULT
+    - RESTRICT
+La formula ganadora es: ON DELETE RESTRICT ON UPDATE CASCADE
+*/
+CREATE TABLE lenguajes (
+	lenguaje_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Lenguaje VARCHAR(30) NOT NULL
+);
+
+INSERT INTO Lenguajes (lenguaje) VALUES
+("JavaScript"),
+("PHP"),
+("Python"),
+("Ruby"),
+("JAVA");
+
+CREATE TABLE frameworks (
+	framework_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    framework VARCHAR(30) NOT NULL,
+	lenguaje INT UNSIGNED,
+    -- llave foranea lenguaje hace referencia a la columna de mi tabla lenguaje_id
+	FOREIGN KEY (Lenguaje) REFERENCES lenguajes (lenguaje_id)
+    -- Y establece las restricciones
+    ON DELETE RESTRICT ON UPDATE CASCADE -- No dejar borar, pero si actualiza en cascada afectando a las referencias 👌
+    -- también se puede establecer como null, pero lo mejor en DELETE es RESTRICT
+    -- ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+INSERT INTO frameworks (framework, lenguaje) VALUES
+("React", 1),
+("Angular", 1),
+("Vue", 1),
+("Svelte", 1),
+("Laravel", 2),
+("Symfony", 2),
+("Flask", 3),
+("Django", 3),
+("On Rails", 4);
+
+SELECT * FROM lenguajes;
+SELECT * FROM frameworks;
+
+SELECT f.framework_id, f.framework, l.lenguaje FROM frameworks AS F
+	INNER JOIN lenguajes AS l	ON f.lenguaje = l.lenguaje_id;
+    
+DELETE FROM lenguajes WHERE lenguaje_id = 3;
+-- podría ejecutar esto porque ellenguaje 3 (python) tiene dependencias de llave foránea
+-- los lenguajes relacionales guardan la integridad de los datos
+
+DROP TABLE lenguajes;
+-- Tampoco podría borrar una tabla con dependencias
