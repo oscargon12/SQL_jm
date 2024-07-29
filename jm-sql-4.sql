@@ -113,7 +113,9 @@ CREATE VIEW vista_caballeros AS
         
 SELECT * FROM vista_caballeros;
 
--- Restricciones Cascade
+-- ----------------------------------------------------------------------------------------------
+
+-- RESTRICCIONES Cascade
 /*
 4 tipos de restricciones para DELETE y UPDATE
 	- CASCADE
@@ -169,3 +171,58 @@ DELETE FROM lenguajes WHERE lenguaje_id = 3;
 
 DROP TABLE lenguajes;
 -- Tampoco podría borrar una tabla con dependencias
+
+-- ----------------------------------------------------------------------------------------------
+
+-- TRANSACCIONES
+-- Permiten correr un grupo de sentencias y hacer rollback a la base de datos si alguna sentencia del grupo falla
+
+START TRANSACTION;	-- Inicia la transacción
+	-- Sentencias dentro de la transacción
+	UPDATE frameworks SET framework = "Vue.js" WHERE framework_id = 3;
+    DELETE FROM frameworks;
+    INSERT INTO frameworks VALUES (0, "Spring", 5);
+	-- fin de sentencias
+ROLLBACK;	-- Descarta los cambios de la transacción
+COMMIT;		-- Acepta los cambios de la transacción	
+
+-- ----------------------------------------------------------------------------------------------
+
+-- CLAUSULA LIMIT
+-- Permite limitar la cantidad de registros que se consulta en un SELECT
+SELECT * FROM frameworks;
+SELECT * FROM frameworks LIMIT 2, 2; -- Esto muestra desde el 3 registro, dos registros
+SELECT * FROM frameworks LIMIT 3, 3; -- Esto muestra desde el 4 registro, tres registros
+
+-- ----------------------------------------------------------------------------------------------
+
+-- ENCRIPTACIÓN
+-- FUNCIONES encriptan caracteres en un hash
+SELECT MD5('Mi_pa55word');
+SELECT SHA1('Mi_pa55word');
+SELECT SHA2('Mi_pa55word', 256); -- esta recibe un 2do parametro de bits
+
+SELECT AES_ENCRYPT('Mi_pa55word', 'llave_secreta'); -- esta recibe un 2do parametro palabra secreta
+SELECT AES_DECRYPT(nombre_campo, 'llave_secreta'); -- esta recibe un 2do parametro, columna donde se desencripta
+
+-- práctica
+CREATE TABLE pagos_recurrentes (
+	cuenta VARCHAR(8) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+	tarjeta BLOB
+);
+
+SELECT * FROM pagos_recurrentes;
+
+SELECT CAST(AES_DECRYPT(tarjeta, '12345678') AS CHAR) AS tdc, nombre
+	FROM pagos_recurrentes;
+-- Desencripta tarjeta con la llave '12345678', como CHAR con el combre de columna tdc
+
+SELECT CAST(AES_DECRYPT(tarjeta, 'super_llave') AS CHAR) AS tdc, nombre
+	FROM pagos_recurrentes;
+    
+INSERT INTO pagos_recurrentes VALUES
+	('12345678', 'Jon Snow', AES_ENCRYPT('1234567890123456788', '12345678')),
+    ('12345677', 'Daenerys', AES_ENCRYPT('1234567890123456777', '12345678')),
+    ('12345676', 'Tyrion Lanister', AES_ENCRYPT('1234567890123456776', 'super_llave')),
+    ('12345675', 'Ned Stark', AES_ENCRYPT('1234567890123456774', 'super_llave'));
